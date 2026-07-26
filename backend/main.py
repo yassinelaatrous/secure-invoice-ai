@@ -6,6 +6,7 @@ from datetime import datetime
 
 from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
@@ -404,6 +405,11 @@ def get_dashboard_stats(current_user: Utilisateur = Depends(get_current_user), d
 @app.get("/api/rules")
 def get_rules(current_user: Utilisateur = Depends(get_current_user), db: Session = Depends(get_db)):
     return db.query(RegleConformite).all()
+
+# Serve Flutter Web Application on root /
+web_build_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../mobile/build/web"))
+if os.path.exists(web_build_dir):
+    app.mount("/", StaticFiles(directory=web_build_dir, html=True), name="web_app")
 
 if __name__ == "__main__":
     import uvicorn
