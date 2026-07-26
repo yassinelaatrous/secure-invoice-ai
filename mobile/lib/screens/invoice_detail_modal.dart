@@ -7,7 +7,7 @@ import '../widgets/heavenly_interaction.dart';
 class InvoiceDetailModal extends StatefulWidget {
   final Invoice invoice;
 
-  const InvoiceDetailModal({Key? key, required this.invoice}) : super(key: key);
+  const InvoiceDetailModal({super.key, required this.invoice});
 
   static void show(BuildContext context, Invoice invoice) {
     showModalBottomSheet(

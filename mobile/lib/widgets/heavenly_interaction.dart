@@ -8,13 +8,13 @@ class HeavenlyInteraction extends StatefulWidget {
   final bool enableHover;
 
   const HeavenlyInteraction({
-    Key? key,
+    super.key,
     required this.child,
     this.onTap,
     this.scaleDown = 0.95,
     this.hoverScale = 1.03,
     this.enableHover = true,
-  }) : super(key: key);
+  });
 
   @override
   State<HeavenlyInteraction> createState() => _HeavenlyInteractionState();

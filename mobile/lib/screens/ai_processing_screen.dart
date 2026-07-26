@@ -8,7 +8,7 @@ import 'invoice_detail_modal.dart';
 
 class AIProcessingScreen extends StatefulWidget {
   final String filePath;
-  const AIProcessingScreen({Key? key, required this.filePath}) : super(key: key);
+  const AIProcessingScreen({super.key, required this.filePath});
 
   @override
   State<AIProcessingScreen> createState() => _AIProcessingScreenState();
@@ -16,7 +16,6 @@ class AIProcessingScreen extends StatefulWidget {
 
 class _AIProcessingScreenState extends State<AIProcessingScreen> with TickerProviderStateMixin {
   int _currentStep = 0;
-  bool _isFinished = false;
   Invoice? _result;
 
   final List<String> _steps = [
@@ -80,7 +79,6 @@ class _AIProcessingScreenState extends State<AIProcessingScreen> with TickerProv
     }
 
     if (mounted) {
-      setState(() => _isFinished = true);
       await Future.delayed(const Duration(milliseconds: 300));
       _showResults();
     }

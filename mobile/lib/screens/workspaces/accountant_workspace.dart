@@ -9,7 +9,7 @@ import '../../widgets/fade_in_slide.dart';
 import '../../widgets/heavenly_interaction.dart';
 
 class AccountantWorkspace extends StatefulWidget {
-  const AccountantWorkspace({Key? key}) : super(key: key);
+  const AccountantWorkspace({super.key});
 
   @override
   State<AccountantWorkspace> createState() => _AccountantWorkspaceState();
@@ -50,7 +50,7 @@ class _AccountantWorkspaceState extends State<AccountantWorkspace> {
       'subtitle': 'Global Logistics • Uploaded 5h ago',
       'icon': Icons.description,
       'badgeText': 'Ready for Approval',
-      'badgeBgColor': Color(0xFFB7E4C7).withOpacity(0.3),
+      'badgeBgColor': Color(0xFFB7E4C7).withValues(alpha: 0.3),
       'badgeTextColor': const Color(0xFF0E6C4A),
       'isApproveBtn': true,
       'supplier': 'Global Logistics',
@@ -319,7 +319,7 @@ class _AccountantWorkspaceState extends State<AccountantWorkspace> {
           height: 40,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: const Color(0xFF012D1D).withOpacity(0.1), width: 2),
+            border: Border.all(color: const Color(0xFF012D1D).withValues(alpha: 0.1), width: 2),
             image: const DecorationImage(
               image: NetworkImage(
                 'https://lh3.googleusercontent.com/aida-public/AB6AXuCG3KdJDVrmQn-8uV8v31fD0K1oQBJi6bMPa8L9Q37tpFf0r-_cnqiOEEWoh7TgT4dLV_K5UfNWpXKthit3nDA3rEqtAxp2qAG7V8nxjY7Ovuu9kICDyA23wm7FMuyIUwd74mItigQsTtDYDvWum2J2bvs7IG_W5eCv6x_Dmu1IcBrIPC-TonpAT1VTC320hptA858gYIEFQRhrs0zShfgyhTTAkLGK_OdTf21hgpic8Vi_xpcyA94A3apsGnSkMNYnynlh9iJrH4ZD',
@@ -425,7 +425,7 @@ class _AccountantWorkspaceState extends State<AccountantWorkspace> {
         border: Border.all(color: const Color(0xFFE5E2DF)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1A1C1B).withOpacity(0.03),
+            color: const Color(0xFF1A1C1B).withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

@@ -8,7 +8,7 @@ import '../widgets/fade_in_slide.dart';
 import '../widgets/heavenly_interaction.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -62,18 +62,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _handleRoleSwitch(String role) async {
     await AuthService.logout();
     await AuthService.login(role.toLowerCase(), 'sandbox');
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: AppTheme.accentGreen,
-          content: Text('Switched to $role sandbox role. Re-routing...'),
-        ),
-      );
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-        (route) => false,
-      );
-    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: AppTheme.accentGreen,
+        content: Text('Switched to $role sandbox role. Re-routing...'),
+      ),
+    );
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (route) => false,
+    );
   }
 
   void _showInviteDialog() {
@@ -518,12 +517,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: HeavenlyInteraction(
                   onTap: () async {
                     await AuthService.logout();
-                    if (mounted) {
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (context) => const LoginScreen()),
-                        (route) => false,
-                      );
-                    }
+                    if (!context.mounted) return;
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => const LoginScreen()),
+                      (route) => false,
+                    );
                   },
                   child: Container(
                     height: 50,
@@ -647,7 +645,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Switch(
               value: value,
               onChanged: onChanged,
-              activeColor: Colors.white,
+              activeThumbColor: Colors.white,
               activeTrackColor: AppTheme.accentGreen,
               inactiveThumbColor: Colors.white,
               inactiveTrackColor: AppTheme.textMuted.withValues(alpha: 0.3),

@@ -17,6 +17,7 @@ dependencies:
   intl: ^0.20.3
   crypto: ^3.0.3
   google_fonts: ^6.2.1
+  web: ^1.1.1
 
 dev_dependencies:
   flutter_test:

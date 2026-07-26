@@ -8,7 +8,7 @@ import '../widgets/fade_in_slide.dart';
 import '../widgets/heavenly_interaction.dart';
 
 class PersonalProfileScreen extends StatefulWidget {
-  const PersonalProfileScreen({Key? key}) : super(key: key);
+  const PersonalProfileScreen({super.key});
 
   @override
   State<PersonalProfileScreen> createState() => _PersonalProfileScreenState();
@@ -446,7 +446,7 @@ class _PersonalProfileScreenState extends State<PersonalProfileScreen> {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: AppTheme.primary,
+            activeThumbColor: AppTheme.primary,
           ),
         ],
       ),

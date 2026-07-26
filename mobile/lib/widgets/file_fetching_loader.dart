@@ -105,7 +105,7 @@ class _FileFetchingLoaderState extends State<FileFetchingLoader>
         borderRadius: BorderRadius.circular(4),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF012D1D).withOpacity(0.3),
+            color: const Color(0xFF012D1D).withValues(alpha: 0.3),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),

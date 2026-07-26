@@ -9,7 +9,7 @@ import 'ai_processing_screen.dart';
 import 'notification_screen.dart';
 
 class CaptureScreen extends StatefulWidget {
-  const CaptureScreen({Key? key}) : super(key: key);
+  const CaptureScreen({super.key});
 
   @override
   State<CaptureScreen> createState() => _CaptureScreenState();
@@ -547,10 +547,8 @@ class _DashRectPainter extends CustomPainter {
   final Color color;
 
   _DashRectPainter({
-    this.strokeWidth = 2.0,
-    this.gap = 5.0,
     this.color = Colors.grey,
-  });
+  }) : gap = 5.0, strokeWidth = 2.0;
 
   @override
   void paint(Canvas canvas, Size size) {

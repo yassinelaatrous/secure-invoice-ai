@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'screens/login_screen.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'services/auth_service.dart';
@@ -38,7 +37,7 @@ class MajesticScrollBehavior extends MaterialScrollBehavior {
 class SecureInvoiceApp extends StatelessWidget {
   final bool isLoggedIn;
 
-  const SecureInvoiceApp({Key? key, required this.isLoggedIn}) : super(key: key);
+  const SecureInvoiceApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {

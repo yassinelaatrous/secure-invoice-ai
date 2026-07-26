@@ -7,12 +7,12 @@ class FadeInSlide extends StatefulWidget {
   final Offset direction;
 
   const FadeInSlide({
-    Key? key,
+    super.key,
     required this.child,
     this.duration = const Duration(milliseconds: 800),
     this.delay = Duration.zero,
     this.direction = const Offset(0, 30), // 30px slide for more elegance
-  }) : super(key: key);
+  });
 
   @override
   State<FadeInSlide> createState() => _FadeInSlideState();

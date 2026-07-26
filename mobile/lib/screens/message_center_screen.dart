@@ -6,7 +6,7 @@ import '../widgets/heavenly_interaction.dart';
 import '../theme/app_theme.dart';
 
 class MessageCenterScreen extends StatefulWidget {
-  const MessageCenterScreen({Key? key}) : super(key: key);
+  const MessageCenterScreen({super.key});
 
   @override
   State<MessageCenterScreen> createState() => _MessageCenterScreenState();

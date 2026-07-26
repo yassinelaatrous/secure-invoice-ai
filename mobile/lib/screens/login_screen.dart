@@ -7,7 +7,7 @@ import '../widgets/fade_in_slide.dart';
 import '../widgets/heavenly_interaction.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -327,7 +327,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       Switch(
                         value: _mfaEnabled,
-                        activeColor: AppTheme.primary,
+                        activeThumbColor: AppTheme.primary,
                         onChanged: (val) {
                           setState(() {
                             _mfaEnabled = val;

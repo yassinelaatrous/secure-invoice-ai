@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import 'login_screen.dart';
 import 'dart:ui_web' as ui_web;
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
+import 'package:web/web.dart' as web;
 
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({Key? key}) : super(key: key);
+  const OnboardingScreen({super.key});
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -21,7 +20,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.initState();
     ui_web.platformViewRegistry.registerViewFactory(
       'threejs-mascot',
-      (int viewId) => html.IFrameElement()
+      (int viewId) => web.HTMLIFrameElement()
         ..src = 'mascot.html'
         ..style.border = 'none'
         ..style.width = '100%'
@@ -122,7 +121,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             border: Border.all(color: AppTheme.cardBorder),
                             boxShadow: [
                               BoxShadow(
-                                color: AppTheme.primary.withOpacity(0.06),
+                                color: AppTheme.primary.withValues(alpha: 0.06),
                                 blurRadius: 32,
                                 offset: const Offset(0, 8),
                               ),
@@ -179,7 +178,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         decoration: BoxDecoration(
                           color: _currentPage == index
                               ? AppTheme.primary
-                              : AppTheme.textMuted.withOpacity(0.3),
+                              : AppTheme.textMuted.withValues(alpha: 0.3),
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),

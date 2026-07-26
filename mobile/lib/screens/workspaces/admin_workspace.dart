@@ -11,7 +11,7 @@ import '../../models/invoice.dart';
 class AdminWorkspace extends StatefulWidget {
   final VoidCallback onScanPressed;
 
-  const AdminWorkspace({Key? key, required this.onScanPressed}) : super(key: key);
+  const AdminWorkspace({super.key, required this.onScanPressed});
 
   @override
   State<AdminWorkspace> createState() => _AdminWorkspaceState();
@@ -643,7 +643,7 @@ class _AdminWorkspaceState extends State<AdminWorkspace> {
 }
 
 class _CashflowChart extends StatefulWidget {
-  const _CashflowChart({Key? key}) : super(key: key);
+  const _CashflowChart();
 
   @override
   State<_CashflowChart> createState() => _CashflowChartState();

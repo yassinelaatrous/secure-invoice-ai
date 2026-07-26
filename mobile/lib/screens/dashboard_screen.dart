@@ -13,7 +13,7 @@ import '../widgets/heavenly_interaction.dart';
 import '../widgets/fade_in_slide.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+  const DashboardScreen({super.key});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();

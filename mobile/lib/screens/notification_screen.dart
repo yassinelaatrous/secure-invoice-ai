@@ -5,7 +5,7 @@ import '../widgets/fade_in_slide.dart';
 import '../widgets/heavenly_interaction.dart';
 
 class NotificationScreen extends StatefulWidget {
-  const NotificationScreen({Key? key}) : super(key: key);
+  const NotificationScreen({super.key});
 
   @override
   State<NotificationScreen> createState() => _NotificationScreenState();
@@ -14,48 +14,7 @@ class NotificationScreen extends StatefulWidget {
 class _NotificationScreenState extends State<NotificationScreen> {
   String _selectedCategory = 'All';
 
-  final List<Map<String, dynamic>> _notifications = [
-    {
-      'id': 1,
-      'type': 'Security',
-      'title': 'Suspicious Invoice Detected',
-      'description': "Invoice #INV-2026-089 from 'TechCorp LLC' shows unusual billing patterns and a mismatched IBAN.",
-      'time': '2m ago',
-      'icon': Icons.warning_amber_rounded,
-      'color': AppTheme.error,
-      'isHighRisk': true,
-    },
-    {
-      'id': 2,
-      'type': 'Financial',
-      'title': 'Invoice Validated',
-      'description': "Invoice #INV-2026-088 for €12,450.00 has been successfully validated by the accounting team.",
-      'time': '1h ago',
-      'icon': Icons.check_circle_outline,
-      'color': AppTheme.accentGreen,
-      'isHighRisk': false,
-    },
-    {
-      'id': 3,
-      'type': 'System',
-      'title': 'MFA Policy Update',
-      'description': "Your organization requires Multi-Factor Authentication setup for enhanced security.",
-      'time': 'Yesterday',
-      'icon': Icons.lock_outline,
-      'color': AppTheme.textMuted,
-      'isHighRisk': false,
-    },
-    {
-      'id': 4,
-      'type': 'Security',
-      'title': 'IBAN Mismatch Alert',
-      'description': "The IBAN provided for vendor 'Global Supplies Ltd' does not match their historical records.",
-      'time': '2 days ago',
-      'icon': Icons.account_balance_outlined,
-      'color': AppTheme.primary,
-      'isHighRisk': false,
-    }
-  ];
+  final List<Map<String, dynamic>> _notifications = [];
 
   void _showNotificationDetail(Map<String, dynamic> data) {
     showModalBottomSheet(
@@ -213,6 +172,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         ),
       ],
     ).then((value) {
+      if (!context.mounted) return;
       if (value == 'read_all') {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('All alerts marked as read ✓')),

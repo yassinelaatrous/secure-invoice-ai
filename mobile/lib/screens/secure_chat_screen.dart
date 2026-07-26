@@ -7,7 +7,7 @@ import '../theme/app_theme.dart';
 import '../widgets/heavenly_interaction.dart';
 
 class SecureChatScreen extends StatefulWidget {
-  const SecureChatScreen({Key? key}) : super(key: key);
+  const SecureChatScreen({super.key});
 
   @override
   State<SecureChatScreen> createState() => _SecureChatScreenState();
@@ -17,36 +17,7 @@ class _SecureChatScreenState extends State<SecureChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  final List<Map<String, dynamic>> _chatMessages = [
-    {
-      'isMe': false,
-      'text': 'Good morning! I\'ve reviewed your latest quarterly expenses. Everything looks solid, but we need to verify one specific vendor invoice from August.',
-      'time': '10:45 AM',
-      'hasDoc': false,
-    },
-    {
-      'isMe': true,
-      'text': 'Hi Sarah, sure thing. Which invoice are you referring to?',
-      'time': '10:48 AM',
-      'hasDoc': false,
-      'statusIcon': Icons.done_all,
-      'statusColor': AppTheme.accent,
-    },
-    {
-      'isMe': false,
-      'text': 'It\'s the one from Apex Tech Solutions. I\'ve attached a secure preview below. Could you confirm if this was for software licensing?',
-      'time': '10:52 AM',
-      'hasDoc': true,
-    },
-    {
-      'isMe': true,
-      'text': 'Yes, that was for the annual CRM renewal. I have the signed agreement if you need it attached.',
-      'time': '10:55 AM',
-      'hasDoc': false,
-      'statusIcon': Icons.done_all,
-      'statusColor': AppTheme.accent,
-    },
-  ];
+  final List<Map<String, dynamic>> _chatMessages = [];
 
   @override
   void dispose() {
@@ -232,6 +203,7 @@ class _SecureChatScreenState extends State<SecureChatScreen> {
         ),
       ],
     ).then((value) {
+      if (!context.mounted) return;
       if (value == 'clear') {
         setState(() {
           _chatMessages.clear();

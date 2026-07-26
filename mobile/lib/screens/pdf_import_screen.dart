@@ -7,7 +7,7 @@ import '../widgets/heavenly_interaction.dart';
 import 'ai_processing_screen.dart';
 
 class PdfImportScreen extends StatefulWidget {
-  const PdfImportScreen({Key? key}) : super(key: key);
+  const PdfImportScreen({super.key});
 
   @override
   State<PdfImportScreen> createState() => _PdfImportScreenState();
@@ -255,10 +255,8 @@ class _DashRectPainter extends CustomPainter {
   final Color color;
 
   _DashRectPainter({
-    this.strokeWidth = 2.0,
-    this.gap = 5.0,
     this.color = Colors.grey,
-  });
+  }) : gap = 5.0, strokeWidth = 2.0;
 
   @override
   void paint(Canvas canvas, Size size) {

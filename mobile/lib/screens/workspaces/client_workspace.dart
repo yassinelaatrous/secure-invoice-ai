@@ -8,7 +8,7 @@ import '../secure_chat_screen.dart';
 import '../personal_profile_screen.dart';
 
 class ClientWorkspace extends StatefulWidget {
-  const ClientWorkspace({Key? key}) : super(key: key);
+  const ClientWorkspace({super.key});
 
   @override
   State<ClientWorkspace> createState() => _ClientWorkspaceState();
@@ -29,17 +29,16 @@ class _ClientWorkspaceState extends State<ClientWorkspace> {
       setState(() {
         _selectedFileName = result.files.single.name;
       });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: AppTheme.primary,
-            content: Text(
-              'Selected file: $_selectedFileName',
-              style: GoogleFonts.dmSans(color: Colors.white),
-            ),
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: AppTheme.primary,
+          content: Text(
+            'Selected file: $_selectedFileName',
+            style: GoogleFonts.dmSans(color: Colors.white),
           ),
-        );
-      }
+        ),
+      );
     }
   }
 
@@ -533,14 +532,13 @@ class _ClientWorkspaceState extends State<ClientWorkspace> {
                               setState(() {
                                 _idUploaded = true;
                               });
-                              if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    backgroundColor: AppTheme.accentGreen,
-                                    content: Text('ID copy uploaded successfully ✓'),
-                                  ),
-                                );
-                              }
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  backgroundColor: AppTheme.accentGreen,
+                                  content: Text('ID copy uploaded successfully ✓'),
+                                ),
+                              );
                             }
                           },
                           child: Container(
@@ -623,14 +621,13 @@ class _ClientWorkspaceState extends State<ClientWorkspace> {
                               setState(() {
                                 _invoiceReplaced = true;
                               });
-                              if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    backgroundColor: AppTheme.accentGreen,
-                                    content: Text('Replacement document submitted successfully ✓'),
-                                  ),
-                                );
-                              }
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  backgroundColor: AppTheme.accentGreen,
+                                  content: Text('Replacement document submitted successfully ✓'),
+                                ),
+                              );
                             }
                           },
                           child: Container(

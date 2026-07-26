@@ -66,7 +66,7 @@ class _AiProcessingOverlayState extends State<AiProcessingOverlay>
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
       child: Container(
-        color: AppTheme.backgroundLight.withOpacity(0.85),
+        color: AppTheme.backgroundLight.withValues(alpha: 0.85),
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -136,7 +136,7 @@ class _AiProcessingOverlayState extends State<AiProcessingOverlay>
                             style: GoogleFonts.dmSans(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
-                              color: AppTheme.textSecondary.withOpacity(0.8),
+                              color: AppTheme.textSecondary.withValues(alpha: 0.8),
                             ),
                           ),
                         ],
