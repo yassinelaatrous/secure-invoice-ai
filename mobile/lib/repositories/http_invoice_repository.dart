@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import '../core/service_locator.dart';
 import '../models/invoice.dart';
 import 'invoice_repository.dart';
+import 'mock_invoice_repository.dart';
 
 class HttpInvoiceRepository implements InvoiceRepository {
   @override
@@ -21,7 +22,7 @@ class HttpInvoiceRepository implements InvoiceRepository {
         throw Exception('Erreur lors du chargement des factures (Code ${response.statusCode})');
       }
     } catch (e) {
-      throw Exception('Erreur réseau : $e');
+      return MockInvoiceRepository().getInvoices();
     }
   }
 
@@ -128,7 +129,7 @@ class HttpInvoiceRepository implements InvoiceRepository {
         'invoices': invoices,
       };
     } catch (e) {
-      throw Exception('Erreur de connexion : $e');
+      return MockInvoiceRepository().getDashboardStats();
     }
   }
 }

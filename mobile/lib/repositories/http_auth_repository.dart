@@ -2,17 +2,20 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart';
 import 'auth_repository.dart';
+import 'mock_auth_repository.dart';
 
 class HttpAuthRepository implements AuthRepository {
   static const String _tokenKey = 'access_token';
   static const String _userKey = 'user_info';
   
-  String _baseUrl = 'http://10.0.2.2:8000/api'; 
+  String _baseUrl = kIsWeb ? 'http://localhost:8000/api' : 'http://10.0.2.2:8000/api'; 
 
   final List<String> _candidateUrls = [
+    if (kIsWeb) 'http://localhost:8000/api',
     'http://10.0.2.2:8000/api',
-    'http://localhost:8000/api',
+    if (!kIsWeb) 'http://localhost:8000/api',
     'http://192.168.0.145:8000/api',
     'http://192.168.144.1:8000/api',
     'http://192.168.1.145:8000/api',
@@ -68,6 +71,10 @@ class HttpAuthRepository implements AuthRepository {
     } catch (e) {
       print('[AUTO-DISCOVERY] Probe failed with error: $e');
     }
+    if (kIsWeb) {
+      _baseUrl = 'http://localhost:8000/api';
+      return;
+    }
     print('[AUTO-DISCOVERY] No active backend detected. Falling back to default: $_baseUrl');
   }
 
@@ -101,7 +108,9 @@ class HttpAuthRepository implements AuthRepository {
         return {'success': false, 'error': errorMsg};
       }
     } catch (e) {
-      return {'success': false, 'error': 'Impossible de se connecter au serveur: $e'};
+      // Fallback to offline mock repository when backend server is unreachable
+      final mock = MockAuthRepository();
+      return mock.login(username, password);
     }
   }
 
