@@ -15,41 +15,69 @@ class MockAuthRepository implements AuthRepository {
 
   @override
   Future<void> discoverBaseUrl() async {
-    print('[OFFLINE MOCK] Auto-discovery bypassed. App is running in standalone sandbox mode.');
+    print('[OFFLINE MOCK] Security Kernel active in Sandbox mode.');
   }
 
   @override
   Future<Map<String, dynamic>> login(String username, String password) async {
-    await Future.delayed(const Duration(milliseconds: 600)); // Artificial latency for realism
+    await Future.delayed(const Duration(milliseconds: 400));
     
     final normalizedUser = username.trim().toLowerCase();
     
-    // Support the new sandbox role access
-    if (normalizedUser == 'admin' || 
-        normalizedUser == 'accountant' || 
-        normalizedUser == 'client' ||
-        normalizedUser == 'admin@demo.com' || 
-        normalizedUser == 'comptable@demo.com' || 
-        normalizedUser == 'client@demo.com') {
-      
-      String role = 'client';
-      if (normalizedUser.startsWith('admin')) role = 'admin';
-      if (normalizedUser.startsWith('comptable') || normalizedUser == 'accountant') role = 'accountant';
+    // Support standard security roles
+    String role = 'client';
+    String name = 'Client User';
+    String tenantId = 'tenant_alpha';
+    bool mfaRequired = false;
 
-      _currentUser = {
-        'email': '$role@demo.com',
-        'nom': role.toUpperCase(),
-        'role': role,
-      };
-      _token = 'mock_jwt_token_for_$role';
-      
-      return {'success': true, 'user': _currentUser};
+    if (normalizedUser == 'admin' || normalizedUser == 'admin@demo.com') {
+      role = 'admin';
+      name = 'Yassine Admin';
+      tenantId = 'cabinet_internal';
+      mfaRequired = true;
+    } else if (normalizedUser == 'expert' || normalizedUser == 'expert@demo.com' || normalizedUser == 'accountant') {
+      role = 'expert_comptable';
+      name = 'Khaled Expert';
+      tenantId = 'cabinet_internal';
+      mfaRequired = true;
+    } else if (normalizedUser == 'comptable' || normalizedUser == 'comptable@demo.com') {
+      role = 'comptable';
+      name = 'Mohamed Comptable';
+      tenantId = 'cabinet_internal';
+      mfaRequired = true;
+    } else if (normalizedUser == 'assistant' || normalizedUser == 'assistant@demo.com') {
+      role = 'assistant_comptable';
+      name = 'Sarra Assistant';
+      tenantId = 'cabinet_internal';
+      mfaRequired = true;
+    } else if (normalizedUser == 'auditeur' || normalizedUser == 'auditeur@demo.com') {
+      role = 'auditeur';
+      name = 'Sami Auditeur';
+      tenantId = 'cabinet_internal';
+      mfaRequired = true;
+    } else if (normalizedUser == 'client' || normalizedUser == 'client@demo.com') {
+      role = 'client';
+      name = 'Yassine Client';
+      tenantId = 'tenant_alpha';
+      mfaRequired = false;
     } else {
       return {
         'success': false, 
-        'error': 'Invalid credentials. Use Sandbox roles.'
+        'error': 'Identifiants invalides.'
       };
     }
+
+    _currentUser = {
+      'id': role == 'client' ? 1 : role == 'assistant_comptable' ? 2 : role == 'comptable' ? 3 : role == 'expert_comptable' ? 4 : role == 'auditeur' ? 5 : 6,
+      'email': '$role@demo.com',
+      'nom': name,
+      'role': role,
+      'tenant_id': tenantId,
+      'mfa_enabled': mfaRequired,
+    };
+    _token = 'mock_jwt_token_for_$role';
+    
+    return {'success': true, 'user': _currentUser};
   }
 
   @override

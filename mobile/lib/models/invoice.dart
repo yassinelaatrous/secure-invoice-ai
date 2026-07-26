@@ -19,6 +19,12 @@ class Invoice {
   final String? conformiteDetails;
   final String? fraudeJustification;
   final List<dynamic>? fraudeAlertes;
+  final int? creeParId;
+  final int? valideParId;
+  final String? creeParNom;
+  final String? tenantId;
+  final String? mimeType;
+  final bool? isScannedSafe;
 
   Invoice({
     required this.id,
@@ -39,10 +45,15 @@ class Invoice {
     this.conformiteDetails,
     this.fraudeJustification,
     this.fraudeAlertes,
+    this.creeParId,
+    this.valideParId,
+    this.creeParNom,
+    this.tenantId,
+    this.mimeType,
+    this.isScannedSafe,
   });
 
   factory Invoice.fromJson(Map<String, dynamic> json) {
-    // Helper to parse double fields safely
     double toDouble(dynamic val) {
       if (val == null) return 0.0;
       if (val is int) return val.toDouble();
@@ -50,13 +61,11 @@ class Invoice {
       return double.tryParse(val.toString()) ?? 0.0;
     }
 
-    // Helper to parse dates safely
     DateTime toDateTime(dynamic val) {
       if (val == null) return DateTime.now();
       return DateTime.tryParse(val.toString()) ?? DateTime.now();
     }
 
-    // Parse fraude_alertes which can be a JSON string or already a list
     List<dynamic>? parseAlertes(dynamic val) {
       if (val == null) return null;
       if (val is List) return val;
@@ -72,20 +81,25 @@ class Invoice {
       fournisseur: json['fournisseur'] ?? 'Inconnu',
       dateFacture: toDateTime(json['date_facture']),
       dateReception: toDateTime(json['date_reception'] ?? json['created_at']),
-      devise: json['devise'] ?? 'TND',
-      // Backend uses 'ht', 'tva', 'ttc' — NOT 'montant_ht', 'montant_ttc'
+      devise: json['devise'] ?? 'EUR',
       montantHt: toDouble(json['ht'] ?? json['montant_ht']),
       tva: toDouble(json['tva']),
       montantTtc: toDouble(json['ttc'] ?? json['montant_ttc']),
       iban: json['iban'] ?? '',
-      statut: json['statut'] ?? 'nouveau',
+      statut: json['statut'] ?? 'brouillon',
       fraudScore: toDouble(json['fraude_score'] ?? json['fraud_score']),
       confidenceScore: toDouble(json['confiance'] ?? json['confidence_score'] ?? 0.95),
-      imagePath: json['image_path'],
-      conformiteValide: json['conformite_valide'],
+      imagePath: json['file_path'] ?? json['image_path'],
+      conformiteValide: json['conformite_valide'] ?? true,
       conformiteDetails: json['conformite_details'],
       fraudeJustification: json['fraude_justification'],
       fraudeAlertes: parseAlertes(json['fraude_alertes']),
+      creeParId: json['cree_par_id'],
+      valideParId: json['valide_par_id'],
+      creeParNom: json['cree_par_nom'] ?? 'Auteur Système',
+      tenantId: json['tenant_id'] ?? 'tenant_default',
+      mimeType: json['mime_type'] ?? 'application/pdf',
+      isScannedSafe: json['is_scanned_safe'] ?? true,
     );
   }
 
@@ -101,6 +115,9 @@ class Invoice {
       'ttc': montantTtc,
       'iban': iban,
       'statut': statut,
+      'cree_par_id': creeParId,
+      'valide_par_id': valideParId,
+      'tenant_id': tenantId,
     };
   }
 }
