@@ -8,6 +8,7 @@ class AppTheme {
   static const Color primaryContainer = Color(0xFF1B4332); // medium forest green
   static const Color accent = Color(0xFFB8F04A); // bright lime green
   static const Color accentGreen = Color(0xFF0E6C4A); // Stitch secondary green
+  static const Color accentOrange = Color(0xFFF4841F); // CEO-IT Orange
   static const Color warning = Color(0xFFE8A020);
   static const Color error = Color(0xFFBA1A1A); // Stitch error red
   static const Color errorCrimson = Color(0xFFA4161A); // Stitch crimson red

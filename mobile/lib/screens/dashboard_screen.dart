@@ -54,7 +54,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         return AdminWorkspace(
           onScanPressed: () {
             setState(() {
-              _currentIndex = 2; // Go to Capture tab (index 2 now)
+              _currentIndex = 2; // Go to Capture tab
             });
             _pageController.animateToPage(
               2,
@@ -65,6 +65,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         );
       case 'accountant':
       case 'comptable':
+      case 'expert_comptable':
+      case 'assistant_comptable':
+      case 'auditeur':
         return const AccountantWorkspace();
       case 'client':
       default:
