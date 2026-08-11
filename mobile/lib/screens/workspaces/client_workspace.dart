@@ -5,7 +5,7 @@ import '../../widgets/fade_in_slide.dart';
 import '../../widgets/heavenly_interaction.dart';
 import '../../theme/app_theme.dart';
 import '../secure_chat_screen.dart';
-import '../personal_profile_screen.dart';
+import '../notification_screen.dart';
 
 class ClientWorkspace extends StatefulWidget {
   const ClientWorkspace({super.key});
@@ -15,10 +15,66 @@ class ClientWorkspace extends StatefulWidget {
 }
 
 class _ClientWorkspaceState extends State<ClientWorkspace> {
-  String _selectedType = 'Invoice';
   String? _selectedFileName;
   bool _idUploaded = false;
   bool _invoiceReplaced = false;
+
+  // Client Invoices list (Espace Client)
+  final List<Map<String, dynamic>> _clientInvoices = [
+    {
+      'num': '2026-F-0134',
+      'date': '15/05/2026',
+      'montant': '2 450 TND',
+      'statut': 'Impayée',
+      'isOverdue': false,
+    },
+    {
+      'num': '2026-F-0132',
+      'date': '12/05/2026',
+      'montant': '1 350 TND',
+      'statut': 'En retard',
+      'isOverdue': true,
+    },
+    {
+      'num': '2026-F-0131',
+      'date': '10/05/2026',
+      'montant': '3 820 TND',
+      'statut': 'Payée',
+      'isOverdue': false,
+    },
+    {
+      'num': '2026-F-0128',
+      'date': '02/05/2026',
+      'montant': '4 800 TND',
+      'statut': 'Payée',
+      'isOverdue': false,
+    },
+  ];
+
+  // Client Deadlines
+  final List<Map<String, dynamic>> _clientDeadlines = [
+    {
+      'label': 'Déclaration TVA — Mai 2026',
+      'date': '12/06/2026',
+      'montant': '950 TND',
+      'statut': 'À venir',
+      'isUrgent': false,
+    },
+    {
+      'label': 'Paiement fournisseur — Office Matériel',
+      'date': '04/06/2026',
+      'montant': '2 450 TND',
+      'statut': 'Urgent',
+      'isUrgent': true,
+    },
+    {
+      'label': 'Cotisation CNSS — T2 2026',
+      'date': '15/06/2026',
+      'montant': '1 800 TND',
+      'statut': 'À venir',
+      'isUrgent': false,
+    },
+  ];
 
   void _selectFile() async {
     final result = await FilePicker.platform.pickFiles(
@@ -34,7 +90,7 @@ class _ClientWorkspaceState extends State<ClientWorkspace> {
         SnackBar(
           backgroundColor: AppTheme.primary,
           content: Text(
-            'Selected file: $_selectedFileName',
+            'Document transmis au cabinet : $_selectedFileName',
             style: GoogleFonts.dmSans(color: Colors.white),
           ),
         ),
@@ -57,7 +113,7 @@ class _ClientWorkspaceState extends State<ClientWorkspace> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Book a Consultation',
+                'Prendre rendez-vous avec votre comptable',
                 style: GoogleFonts.fraunces(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -66,7 +122,7 @@ class _ClientWorkspaceState extends State<ClientWorkspace> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Select a convenient time slot to discuss your tax portfolio with Sarah Jenkins.',
+                'Sélectionnez un créneau disponible pour échanger avec Sarah Jlassi.',
                 style: GoogleFonts.dmSans(
                   fontSize: 14,
                   color: AppTheme.textSecondary,
@@ -92,7 +148,7 @@ class _ClientWorkspaceState extends State<ClientWorkspace> {
                       SnackBar(
                         backgroundColor: AppTheme.accentGreen,
                         content: Text(
-                          'Meeting request sent! Sarah will confirm shortly.',
+                          'Demande de rendez-vous envoyée ! Sarah vous confirmera sous peu.',
                           style: GoogleFonts.dmSans(color: Colors.white),
                         ),
                       ),
@@ -105,7 +161,7 @@ class _ClientWorkspaceState extends State<ClientWorkspace> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      'Request Meeting',
+                      'Confirmer la demande',
                       style: GoogleFonts.dmSans(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
@@ -142,735 +198,69 @@ class _ClientWorkspaceState extends State<ClientWorkspace> {
 
   @override
   Widget build(BuildContext context) {
-    // Dynamically calculate progress based on whether issues were addressed
-    double progressRatio = 0.33;
-    if (_invoiceReplaced) progressRatio += 0.33;
-    if (_idUploaded) progressRatio += 0.34;
+    double progressRatio = 0.75;
+    if (_invoiceReplaced) progressRatio += 0.12;
+    if (_idUploaded) progressRatio += 0.13;
+    if (progressRatio > 1.0) progressRatio = 1.0;
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundLight,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
-              FadeInSlide(
-                delay: Duration.zero,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'My Workspace',
-                      style: GoogleFonts.fraunces(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.primary,
-                      ),
-                    ),
-                    HeavenlyInteraction(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const PersonalProfileScreen()),
-                        );
-                      },
-                      child: Container(
-                        width: 36,
-                        height: 36,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppTheme.surfaceCard,
-                        ),
-                        child: const Icon(Icons.person, color: AppTheme.textSecondary, size: 20),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
+              // Top Bar Header
+              _buildHeader(),
+              const SizedBox(height: 20),
 
-              // Upload Document Card
+              // Welcome Banner
+              _buildWelcomeBanner(),
+              const SizedBox(height: 20),
+
+              // KPI Summary Cards
+              FadeInSlide(
+                delay: const Duration(milliseconds: 50),
+                child: _buildKpiCards(),
+              ),
+              const SizedBox(height: 20),
+
+              // Dossier Status & Step History Card
               FadeInSlide(
                 delay: const Duration(milliseconds: 100),
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppTheme.cardBorder),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.textPrimary.withValues(alpha: 0.03),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Upload Document',
-                        style: GoogleFonts.fraunces(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.primary,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Securely deposit your invoices, receipts, or contracts for processing.',
-                        style: GoogleFonts.dmSans(
-                          fontSize: 14,
-                          color: AppTheme.textSecondary,
-                          height: 1.4,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      if (_selectedFileName != null) ...[
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: AppTheme.backgroundLight,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppTheme.accent.withValues(alpha: 0.5)),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.file_present_rounded, color: AppTheme.accentGreen, size: 20),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  _selectedFileName!,
-                                  style: GoogleFonts.dmSans(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppTheme.primary,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.close, size: 16, color: AppTheme.error),
-                                onPressed: () {
-                                  setState(() {
-                                    _selectedFileName = null;
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                      ],
-                      SizedBox(
-                        width: double.infinity,
-                        height: 52,
-                        child: HeavenlyInteraction(
-                          onTap: _selectFile,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: AppTheme.accentGreen,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            alignment: Alignment.center,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.cloud_upload, color: Colors.white),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Select File',
-                                  style: GoogleFonts.dmSans(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildUploadTypeButton(Icons.receipt_long, 'Invoice'),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _buildUploadTypeButton(Icons.article, 'Contract'),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                child: _buildDossierProgressCard(progressRatio),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
-              // Dossier Status Card
+              // Document Upload Dropzone
+              FadeInSlide(
+                delay: const Duration(milliseconds: 150),
+                child: _buildUploadCard(),
+              ),
+              const SizedBox(height: 20),
+
+              // Factures & Invoices Section
               FadeInSlide(
                 delay: const Duration(milliseconds: 200),
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppTheme.cardBorder),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.textPrimary.withValues(alpha: 0.03),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Dossier Status',
-                            style: GoogleFonts.fraunces(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.primary,
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: AppTheme.surfaceCreamDark,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              'Q3 2026',
-                              style: GoogleFonts.dmSans(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.textSecondary,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Process Line Tracker with Animated progress bar
-                      Stack(
-                        children: [
-                          Positioned(
-                            top: 14,
-                            left: 20,
-                            right: 20,
-                            child: Container(
-                              height: 4,
-                              color: AppTheme.cardBorder,
-                            ),
-                          ),
-                          Positioned(
-                            top: 14,
-                            left: 20,
-                            right: 20,
-                            child: LayoutBuilder(
-                              builder: (context, constraints) {
-                                return TweenAnimationBuilder<double>(
-                                  tween: Tween<double>(begin: 0.0, end: progressRatio),
-                                  duration: const Duration(milliseconds: 1000),
-                                  curve: Curves.easeOutCubic,
-                                  builder: (context, value, child) {
-                                    return Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Container(
-                                        width: constraints.maxWidth * value,
-                                        height: 4,
-                                        color: AppTheme.accentGreen,
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              _buildProgressStep('Initiated', Icons.check, true),
-                              _buildProgressStep('Processing', Icons.refresh, progressRatio >= 0.33),
-                              _buildProgressStep('Validation', Icons.fact_check, progressRatio >= 0.66),
-                              _buildProgressStep('Complete', Icons.done_all, progressRatio >= 1.0),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Note box
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: AppTheme.backgroundLight,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: AppTheme.cardBorder),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Icon(Icons.info, color: AppTheme.accentGreen, size: 20),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _invoiceReplaced
-                                        ? 'Reviewing replacement files for INV-2026-089.'
-                                        : 'Currently reviewing uploaded receipts.',
-                                    style: GoogleFonts.dmSans(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppTheme.primary,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Last updated: Jul 17, 2026',
-                                    style: GoogleFonts.dmSans(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w400,
-                                      color: AppTheme.textMuted,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                child: _buildInvoicesCard(),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
-              // Action Required Section
-              if (!_idUploaded || !_invoiceReplaced) ...[
-                FadeInSlide(
-                  delay: const Duration(milliseconds: 300),
-                  child: Text(
-                    'Action Required',
-                    style: GoogleFonts.fraunces(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.primary,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-              ],
-
-              // Missing ID Copy
-              if (!_idUploaded)
-                FadeInSlide(
-                  delay: const Duration(milliseconds: 400),
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppTheme.errorCrimson.withValues(alpha: 0.05),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppTheme.errorCrimson.withValues(alpha: 0.2)),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppTheme.errorCrimson.withValues(alpha: 0.1),
-                          ),
-                          child: const Icon(Icons.warning, color: AppTheme.errorCrimson, size: 20),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Missing ID Copy',
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppTheme.primary,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                'Required for onboarding completion.',
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 11,
-                                  color: AppTheme.textSecondary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        HeavenlyInteraction(
-                          onTap: () async {
-                            final result = await FilePicker.platform.pickFiles(
-                              type: FileType.custom,
-                              allowedExtensions: ['pdf', 'jpg', 'png', 'jpeg'],
-                            );
-                            if (result != null) {
-                              setState(() {
-                                _idUploaded = true;
-                              });
-                              if (!context.mounted) return;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  backgroundColor: AppTheme.accentGreen,
-                                  content: Text('ID copy uploaded successfully ✓'),
-                                ),
-                              );
-                            }
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: AppTheme.errorCrimson.withValues(alpha: 0.3)),
-                            ),
-                            child: Text(
-                              'Upload Now',
-                              style: GoogleFonts.dmSans(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.errorCrimson,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              if (!_idUploaded && !_invoiceReplaced) const SizedBox(height: 12),
-
-              // Rejected Doc Card
-              if (!_invoiceReplaced)
-                FadeInSlide(
-                  delay: const Duration(milliseconds: 450),
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppTheme.cardBorder),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppTheme.surfaceCard,
-                          ),
-                          child: const Icon(Icons.find_in_page, color: AppTheme.textSecondary, size: 20),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Invoice #INV-2026-089',
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppTheme.primary,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                'Blurry scan. Please re-upload.',
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppTheme.error,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        HeavenlyInteraction(
-                          onTap: () async {
-                            final result = await FilePicker.platform.pickFiles(
-                              type: FileType.custom,
-                              allowedExtensions: ['pdf', 'jpg', 'png', 'jpeg'],
-                            );
-                            if (result != null) {
-                              setState(() {
-                                _invoiceReplaced = true;
-                              });
-                              if (!context.mounted) return;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  backgroundColor: AppTheme.accentGreen,
-                                  content: Text('Replacement document submitted successfully ✓'),
-                                ),
-                              );
-                            }
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: AppTheme.cardBorder),
-                            ),
-                            child: Text(
-                              'Replace',
-                              style: GoogleFonts.dmSans(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.primary,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              const SizedBox(height: 24),
-
-              // Assigned Accountant Card
+              // Échéances & Deadlines Section
               FadeInSlide(
-                delay: const Duration(milliseconds: 500),
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppTheme.cardBorder),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'YOUR ACCOUNTANT',
-                        style: GoogleFonts.dmSans(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.textMuted,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Container(
-                            width: 56,
-                            height: 56,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              image: DecorationImage(
-                                image: NetworkImage(
-                                  'https://lh3.googleusercontent.com/aida-public/AB6AXuAvvD-NuPMDxiX7qTxmw_Mr90AIeDNLWboPPRfCD9-nZsc0GV1jyPZKzvGXZzF9Y-mmAN7fqlgVRAwr50TrOtzFJFDHJu-FwTwTGyvUaTJXC8RJ-SG7kjqIMLofewOGZZJlNP7eKOYxuve995rmFhBCJksUgyGhFdWeKxaDog4aGfN99NX9NyH1C3qZxmyPfCqzOJpa97_ZLR0Ll_D67EnIQYa1juKEXdnvneQ25ikdureDBSAjnY4X_3pFYvu7SmXB7VInikmnUBR0',
-                                ),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Sarah Jenkins',
-                                style: GoogleFonts.fraunces(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppTheme.primary,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                'Senior Tax Advisor',
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 13,
-                                  color: AppTheme.textSecondary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: SizedBox(
-                              height: 40,
-                              child: HeavenlyInteraction(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (_) => const SecureChatScreen()),
-                                  );
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: AppTheme.cardBorder),
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(Icons.chat, size: 16, color: AppTheme.primary),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        'Send Message',
-                                        style: GoogleFonts.dmSans(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                          color: AppTheme.primary,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: SizedBox(
-                              height: 40,
-                              child: HeavenlyInteraction(
-                                onTap: _bookMeeting,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.surfaceCard,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(Icons.calendar_month, size: 16, color: AppTheme.textSecondary),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        'Book Meeting',
-                                        style: GoogleFonts.dmSans(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                          color: AppTheme.textSecondary,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                delay: const Duration(milliseconds: 250),
+                child: _buildDeadlinesCard(),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
-              // Quick Stats Grid
+              // Expected Documents & Assigned Accountant Card
               FadeInSlide(
-                delay: const Duration(milliseconds: 600),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppTheme.cardBorder),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Icon(Icons.folder_open, color: AppTheme.accentGreen, size: 24),
-                            const SizedBox(height: 12),
-                            Text(
-                              _selectedFileName != null ? '13' : '12',
-                              style: GoogleFonts.dmSans(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.primary,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Docs Uploaded',
-                              style: GoogleFonts.dmSans(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppTheme.cardBorder),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Icon(Icons.pending_actions, color: AppTheme.accentGreen, size: 24),
-                            const SizedBox(height: 12),
-                            Text(
-                              _selectedFileName != null ? '3' : '2',
-                              style: GoogleFonts.dmSans(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.primary,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Pending Review',
-                              style: GoogleFonts.dmSans(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                delay: const Duration(milliseconds: 300),
+                child: _buildAccountantAndExpectedDocsCard(),
               ),
-              const SizedBox(height: 100), // Padding for bottom nav
+              const SizedBox(height: 100),
             ],
           ),
         ),
@@ -878,74 +268,708 @@ class _ClientWorkspaceState extends State<ClientWorkspace> {
     );
   }
 
-  Widget _buildUploadTypeButton(IconData icon, String label) {
-    final isSelected = _selectedType == label;
-    return HeavenlyInteraction(
-      onTap: () {
-        setState(() {
-          _selectedType = label;
-        });
-      },
-      child: Container(
-        height: 80,
-        decoration: BoxDecoration(
-          color: isSelected ? AppTheme.primary : AppTheme.backgroundLight,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: isSelected ? AppTheme.primary : AppTheme.cardBorder),
+  // --- Top Header ---
+  Widget _buildHeader() {
+    return Row(
+      children: [
+        Container(
+          width: 38,
+          height: 38,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: AppTheme.primary,
+            border: Border.all(color: AppTheme.cardBorder, width: 1.5),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            'AB',
+            style: GoogleFonts.fraunces(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              fontSize: 14,
+            ),
+          ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        const SizedBox(width: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: isSelected ? Colors.white : AppTheme.accentGreen, size: 24),
-            const SizedBox(height: 4),
             Text(
-              label,
+              'CEO-IT',
+              style: GoogleFonts.fraunces(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.primary,
+              ),
+            ),
+            Text(
+              'Espace Client — Société Générale SARL',
               style: GoogleFonts.dmSans(
                 fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: isSelected ? Colors.white : AppTheme.textSecondary,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textSecondary,
               ),
             ),
           ],
+        ),
+        const Spacer(),
+        IconButton(
+          icon: const Icon(Icons.notifications_none_rounded, color: AppTheme.primary),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const NotificationScreen()),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  // --- Welcome Banner ---
+  Widget _buildWelcomeBanner() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.cardBorder),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primary.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Bonjour, Ahmed 👋',
+            style: GoogleFonts.fraunces(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.primary,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Bienvenue dans votre espace client CEO-IT. Suivez l\'avancement de vos dossiers et consultez vos factures en toute sécurité.',
+            style: GoogleFonts.dmSans(
+              fontSize: 13,
+              color: AppTheme.textSecondary,
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // --- Client KPI Summary Cards ---
+  Widget _buildKpiCards() {
+    return GridView.count(
+      crossAxisCount: 2,
+      crossAxisSpacing: 12,
+      mainAxisSpacing: 12,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      childAspectRatio: 1.3,
+      children: [
+        _buildKpiTile('DOCUMENTS', '28', '+3 cette semaine', AppTheme.primary, Icons.description_outlined),
+        _buildKpiTile('FACTURES IMPAYÉES', '2', '1 250 TND en attente', AppTheme.error, Icons.receipt_long_outlined),
+        _buildKpiTile('PROCHAINE ÉCHÉANCE', '12 juin', 'TVA — 950 TND', AppTheme.warning, Icons.calendar_today_outlined),
+        _buildKpiTile('MESSAGES NON LUS', '2', 'Cabinet CEO-IT', AppTheme.accentGreen, Icons.chat_bubble_outline),
+      ],
+    );
+  }
+
+  Widget _buildKpiTile(String label, String value, String subtext, Color color, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.cardBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                label,
+                style: GoogleFonts.dmSans(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textMuted,
+                ),
+              ),
+              Icon(icon, size: 16, color: color),
+            ],
+          ),
+          Text(
+            value,
+            style: GoogleFonts.fraunces(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.primary,
+            ),
+          ),
+          Text(
+            subtext,
+            style: GoogleFonts.dmSans(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // --- Dossier Progress & Step History Card ---
+  Widget _buildDossierProgressCard(double progressRatio) {
+    final percentInt = (progressRatio * 100).toInt();
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.cardBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Avancement du dossier',
+                style: GoogleFonts.fraunces(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.primary,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppTheme.accentGreen.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '$percentInt%',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.accentGreen,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Clôture exercice 2025 — Étape actuelle : contrôle de conformité par le cabinet',
+            style: GoogleFonts.dmSans(
+              fontSize: 12,
+              color: AppTheme.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Progress bar
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: progressRatio,
+              minHeight: 8,
+              backgroundColor: AppTheme.cardBorder,
+              valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.accentGreen),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Status Badges
+          Row(
+            children: [
+              _buildStatusChip('Collecte terminée', AppTheme.accentGreen, true),
+              const SizedBox(width: 8),
+              _buildStatusChip('En révision', AppTheme.warning, true),
+              const SizedBox(width: 8),
+              _buildStatusChip('Clôture à venir', AppTheme.textMuted, false),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusChip(String label, Color color, bool active) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: active ? color.withValues(alpha: 0.12) : AppTheme.surfaceCard,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        label,
+        style: GoogleFonts.dmSans(
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+          color: active ? color : AppTheme.textMuted,
         ),
       ),
     );
   }
 
-  Widget _buildProgressStep(String label, IconData icon, bool isActive) {
-    final stepColor = isActive ? AppTheme.accentGreen : AppTheme.cardBorder;
-    final iconColor = isActive ? Colors.white : AppTheme.textMuted;
-
-    return Column(
-      children: [
-        Container(
-          width: 32,
-          height: 32,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: stepColor,
-            boxShadow: isActive
-                ? [
-                    BoxShadow(
-                      color: stepColor.withValues(alpha: 0.2),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
+  // --- Upload Card ---
+  Widget _buildUploadCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.cardBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Déposer un document',
+            style: GoogleFonts.fraunces(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.primary,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Transmettez vos factures, pièces justificatives ou relevés au cabinet.',
+            style: GoogleFonts.dmSans(
+              fontSize: 12,
+              color: AppTheme.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          if (_selectedFileName != null) ...[
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppTheme.backgroundLight,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppTheme.accentGreen),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: AppTheme.accentGreen, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      _selectedFileName!,
+                      style: GoogleFonts.dmSans(fontSize: 12, fontWeight: FontWeight.bold),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ]
-                : null,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+          SizedBox(
+            width: double.infinity,
+            height: 46,
+            child: HeavenlyInteraction(
+              onTap: _selectFile,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppTheme.primary,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.cloud_upload_outlined, color: Colors.white, size: 18),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Sélectionner un fichier (PDF, JPG, PNG)',
+                      style: GoogleFonts.dmSans(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-          child: Icon(icon, color: iconColor, size: 18),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: GoogleFonts.dmSans(
-            fontSize: 11,
-            fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-            color: isActive ? AppTheme.textPrimary : AppTheme.textMuted,
+        ],
+      ),
+    );
+  }
+
+  // --- Factures & Invoices Card ---
+  Widget _buildInvoicesCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.cardBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Dernières factures ébauchées / émanées',
+                style: GoogleFonts.fraunces(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.primary,
+                ),
+              ),
+              Text(
+                'Tout voir',
+                style: GoogleFonts.dmSans(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.accentGreen,
+                ),
+              ),
+            ],
           ),
-        ),
-      ],
+          const SizedBox(height: 16),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _clientInvoices.length,
+            separatorBuilder: (_, __) => const Divider(height: 16, color: AppTheme.cardBorder),
+            itemBuilder: (context, i) {
+              final inv = _clientInvoices[i];
+              final isOverdue = inv['isOverdue'] == true;
+              final isPaid = inv['statut'] == 'Payée';
+
+              return Row(
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: isPaid
+                          ? AppTheme.accentGreen.withValues(alpha: 0.1)
+                          : isOverdue
+                              ? AppTheme.error.withValues(alpha: 0.1)
+                              : AppTheme.warning.withValues(alpha: 0.1),
+                    ),
+                    child: Icon(
+                      Icons.receipt_long_outlined,
+                      color: isPaid
+                          ? AppTheme.accentGreen
+                          : isOverdue
+                              ? AppTheme.error
+                              : AppTheme.warning,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          inv['num'],
+                          style: GoogleFonts.dmSans(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.textPrimary,
+                          ),
+                        ),
+                        Text(
+                          inv['date'],
+                          style: GoogleFonts.dmSans(
+                            fontSize: 11,
+                            color: AppTheme.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        inv['montant'],
+                        style: GoogleFonts.dmSans(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.primary,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: isPaid
+                              ? AppTheme.accentGreen.withValues(alpha: 0.12)
+                              : isOverdue
+                                  ? AppTheme.error.withValues(alpha: 0.12)
+                                  : AppTheme.warning.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          inv['statut'],
+                          style: GoogleFonts.dmSans(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: isPaid
+                                ? AppTheme.accentGreen
+                                : isOverdue
+                                    ? AppTheme.error
+                                    : AppTheme.warning,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // --- Deadlines Card ---
+  Widget _buildDeadlinesCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.cardBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Prochaines échéances',
+            style: GoogleFonts.fraunces(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.primary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _clientDeadlines.length,
+            separatorBuilder: (_, __) => const Divider(height: 16, color: AppTheme.cardBorder),
+            itemBuilder: (context, i) {
+              final d = _clientDeadlines[i];
+              final isUrgent = d['isUrgent'] == true;
+
+              return Row(
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: isUrgent ? AppTheme.error.withValues(alpha: 0.1) : AppTheme.warning.withValues(alpha: 0.1),
+                    ),
+                    child: Icon(
+                      Icons.schedule_outlined,
+                      color: isUrgent ? AppTheme.error : AppTheme.warning,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          d['label'],
+                          style: GoogleFonts.dmSans(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.textPrimary,
+                          ),
+                        ),
+                        Text(
+                          'Échéance: ${d['date']}',
+                          style: GoogleFonts.dmSans(
+                            fontSize: 11,
+                            color: AppTheme.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    d['montant'],
+                    style: GoogleFonts.dmSans(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: isUrgent ? AppTheme.error : AppTheme.primary,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // --- Accountant & Expected Documents Card ---
+  Widget _buildAccountantAndExpectedDocsCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.cardBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Votre responsable comptable',
+            style: GoogleFonts.fraunces(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.primary,
+            ),
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppTheme.primary,
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  'SJ',
+                  style: GoogleFonts.fraunces(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Sarah Jlassi',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.primary,
+                    ),
+                  ),
+                  Text(
+                    'Comptable senior · Cabinet CEO-IT',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 12,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: HeavenlyInteraction(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SecureChatScreen()),
+                    );
+                  },
+                  child: Container(
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppTheme.primary,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    alignment: Alignment.center,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.chat_bubble_outline, size: 16, color: Colors.white),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Contacter le cabinet',
+                          style: GoogleFonts.dmSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: HeavenlyInteraction(
+                  onTap: _bookMeeting,
+                  child: Container(
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppTheme.surfaceCard,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppTheme.cardBorder),
+                    ),
+                    alignment: Alignment.center,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.calendar_today_outlined, size: 16, color: AppTheme.textSecondary),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Prendre RDV',
+                          style: GoogleFonts.dmSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

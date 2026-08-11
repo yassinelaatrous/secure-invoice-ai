@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'secure_chat_screen.dart';
+import '../services/auth_service.dart';
 import '../widgets/fade_in_slide.dart';
 import '../widgets/heavenly_interaction.dart';
 import '../theme/app_theme.dart';
@@ -13,48 +14,125 @@ class MessageCenterScreen extends StatefulWidget {
 }
 
 class _MessageCenterScreenState extends State<MessageCenterScreen> {
-  String _activeFilter = 'All Messages';
+  String _activeFilter = 'Toutes';
   String _searchQuery = '';
+  Map<String, dynamic>? _user;
   final TextEditingController _searchController = TextEditingController();
 
-  final List<Map<String, dynamic>> _allConversations = [
+  // Role-based conversations
+  final List<Map<String, dynamic>> _clientConversations = [
     {
-      'name': 'Sarah Jenkins (CFO)',
-      'message': 'IBAN mismatch resolved for Q3 invoice.',
-      'time': '09:41 AM',
-      'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuB2P0mz9vcw675nfMW7uxtpn9RvUlVSOx2pldqTVWpy3HRpjS2EThKBcRqvGuh3xScWKuC4XJXwS5l5SmDANo9hiwMIeRqDN2z0Rsfs38PHAO7FWKbkvqSVGZht0ZGQL_BlUJIJ4eFY3v8REB1vgBVIfbnzCuZtTqxRXmFzpS7UJvydIsXQNsg_g0x6qyy8o0hExNP53bKpygkk7TCuczpiq1LR-9I1mORqz7rEYmLVwibztzmIVJ8lc83K6RKdY01PLYrvOO1WHil0',
-      'unreadCount': 2,
+      'name': 'Cabinet CEO-IT',
+      'message': 'Nous avons ajouté de nouveaux documents à votre dossier.',
+      'time': 'il y a 2h',
+      'fallbackInitials': 'CI',
+      'unreadCount': 0,
       'isOnline': true,
-      'type': 'internal',
+      'type': 'cabinet',
     },
     {
-      'name': 'Acme Corp Billing',
-      'message': 'The monthly report is ready for your review.',
-      'time': 'Yesterday',
-      'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuC7sxzwPFaovqzlZS-lunBcbpV_mgihz4rnYpqvhLTzZkBZFO1nmhKuHEHnMulvdQ0cg_OdY47u3rjLSrMaAnF6MNwEdVvhJtJN-oy4C_wPYlJANY4pGQ-zmdk1pDvKUpLzZmwMJ2hoYlh-NGw-OSukGQsAk4Mpg7WZ160RBUG6pPiyiBme3v2l_lfZKfF63EcbbxvC6BlLhGlj156llP40_4q9sjOg09PdRytXKQ128WmlZRAbdJ9_OFxZUfLLKJvoWyuLw-zEEStL',
+      'name': 'Sarah Jlassi (Comptable senior)',
+      'message': 'Merci de vérifier le calcul TVA du dossier STB.',
+      'time': '09:14',
+      'fallbackInitials': 'SJ',
+      'unreadCount': 2,
+      'isOnline': true,
+      'type': 'cabinet',
+    },
+    {
+      'name': 'Amira Bouaziz (Responsable fiscal)',
+      'message': 'Votre déclaration TVA trimestrielle a été déposée avec succès.',
+      'time': 'Hier',
+      'fallbackInitials': 'AB',
+      'unreadCount': 0,
+      'isOnline': false,
+      'type': 'cabinet',
+    },
+  ];
+
+  final List<Map<String, dynamic>> _accountantConversations = [
+    {
+      'name': 'Société Tunisienne de Bâtiment (STB)',
+      'message': 'Justificatif déposé pour l\'achat du 24 mai.',
+      'time': '10:15 AM',
+      'fallbackInitials': 'STB',
+      'unreadCount': 2,
+      'isOnline': true,
+      'type': 'client',
+    },
+    {
+      'name': 'Le Bon Goût Traiteur',
+      'message': 'Pièce manquante — RIB à fournir avant le 20/05.',
+      'time': 'Hier',
+      'fallbackInitials': 'LBG',
+      'unreadCount': 1,
+      'isOnline': false,
+      'type': 'client',
+    },
+    {
+      'name': 'Alpha Industrie',
+      'message': 'Validation du dossier en attente de signature.',
+      'time': 'Lundi',
+      'fallbackInitials': 'AIN',
       'unreadCount': 0,
       'isOnline': false,
       'type': 'client',
     },
     {
-      'name': 'Michael Ross (Legal)',
-      'message': 'Contracts have been uploaded to the vault.',
-      'time': 'Tue',
-      'fallbackInitials': 'MR',
-      'unreadCount': 0,
-      'isOnline': false,
-      'type': 'internal',
-    },
-    {
-      'name': 'Emma Watson (Accountant)',
-      'message': 'Please approve the pending wire transfer.',
-      'time': 'Jul 12',
-      'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuCAm-_ET7BeCjf2I3WP-DjiXn8IivggT98x6To9A_aYrewLHtx8nTpQTMkG2QDhaefzxHdSfN4yivrq1cse2yDGSxPVoEfMlJKX8GF0F5Dyd-QOV_wdxZCD55GT9cBudeYACPISPDId_UaZS9qfNMDGkU6R6aDEy9Kn9EUzcfYEwHGanPMPtajzn6ZN5m5BabP9qLK2fBOPAM0aQkMtl9ERHIsleuwgwb_2M5MEYLS6L1O5yqI2rJC3n8RsScTWnlwCMRNHj9Npv2TJ',
+      'name': 'Mehdi Ktari (Comptable)',
+      'message': 'Revue de clôture programmée pour demain 14h.',
+      'time': 'Jul 26',
+      'fallbackInitials': 'MK',
       'unreadCount': 0,
       'isOnline': true,
       'type': 'internal',
     },
   ];
+
+  final List<Map<String, dynamic>> _adminConversations = [
+    {
+      'name': 'Alerte Sécurité — Kernel AI',
+      'message': 'Changement de coordonnées bancaires détecté (Global Printing).',
+      'time': '11:20 AM',
+      'fallbackInitials': 'SEC',
+      'unreadCount': 1,
+      'isOnline': true,
+      'type': 'security',
+    },
+    {
+      'name': 'Sarah Jlassi (Comptable senior)',
+      'message': 'Rapport mensuel de charge d\'équipe finalisé.',
+      'time': '09:41 AM',
+      'fallbackInitials': 'SJ',
+      'unreadCount': 0,
+      'isOnline': true,
+      'type': 'collaborateur',
+    },
+    {
+      'name': 'Société Générale SARL (Client)',
+      'message': 'Demande de rendez-vous pour revue fiscale.',
+      'time': 'Hier',
+      'fallbackInitials': 'SGS',
+      'unreadCount': 0,
+      'isOnline': false,
+      'type': 'client',
+    },
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final u = await AuthService.getUserInfo();
+    if (mounted) {
+      setState(() {
+        _user = u;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -83,7 +161,7 @@ class _MessageCenterScreenState extends State<MessageCenterScreen> {
             ],
           ),
           content: Text(
-            'All correspondence, messages, and uploaded files are protected under cryptographic end-to-end encryption. Only authenticated members of your company and designated accountants have keys to decrypt files.',
+            'Toutes les correspondances, messages et fichiers déposés sont protégés par un chiffrement de bout en bout conforme aux normes ISO 27001.',
             style: GoogleFonts.dmSans(
               fontSize: 14,
               color: AppTheme.textSecondary,
@@ -94,7 +172,7 @@ class _MessageCenterScreenState extends State<MessageCenterScreen> {
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(
-                'Got it',
+                'Compris',
                 style: GoogleFonts.dmSans(
                   fontWeight: FontWeight.bold,
                   color: AppTheme.accentGreen,
@@ -107,18 +185,39 @@ class _MessageCenterScreenState extends State<MessageCenterScreen> {
     );
   }
 
+  List<Map<String, dynamic>> get _currentRoleConversations {
+    final role = (_user?['role'] ?? 'client').toString().toLowerCase();
+    if (role == 'admin') return _adminConversations;
+    if (role == 'comptable' || role == 'accountant' || role == 'expert_comptable' || role == 'assistant_comptable') {
+      return _accountantConversations;
+    }
+    return _clientConversations;
+  }
+
+  List<String> get _currentRoleFilterChips {
+    final role = (_user?['role'] ?? 'client').toString().toLowerCase();
+    if (role == 'admin') return ['Toutes', 'Collaborateurs', 'Clients', 'Sécurité', 'Non lus'];
+    if (role == 'comptable' || role == 'accountant' || role == 'expert_comptable' || role == 'assistant_comptable') {
+      return ['Toutes', 'Clients attribués', 'Équipe interne', 'Non lus'];
+    }
+    return ['Toutes', 'Équipe du cabinet', 'Non lus'];
+  }
+
   List<Map<String, dynamic>> get _filteredConversations {
-    // 1. Filter by active tab/chip
-    List<Map<String, dynamic>> res = _allConversations;
-    if (_activeFilter == 'Internal Team') {
-      res = res.where((c) => c['type'] == 'internal').toList();
-    } else if (_activeFilter == 'Clients') {
+    List<Map<String, dynamic>> res = _currentRoleConversations;
+
+    // Filter by Chip
+    if (_activeFilter == 'Équipe du cabinet' || _activeFilter == 'Équipe interne') {
+      res = res.where((c) => c['type'] == 'cabinet' || c['type'] == 'internal').toList();
+    } else if (_activeFilter == 'Clients' || _activeFilter == 'Clients attribués') {
       res = res.where((c) => c['type'] == 'client').toList();
-    } else if (_activeFilter == 'Unread') {
+    } else if (_activeFilter == 'Sécurité') {
+      res = res.where((c) => c['type'] == 'security').toList();
+    } else if (_activeFilter == 'Non lus') {
       res = res.where((c) => (c['unreadCount'] as int) > 0).toList();
     }
 
-    // 2. Filter by search query
+    // Filter by search query
     if (_searchQuery.isNotEmpty) {
       res = res.where((c) {
         final name = (c['name'] as String).toLowerCase();
@@ -133,6 +232,8 @@ class _MessageCenterScreenState extends State<MessageCenterScreen> {
   @override
   Widget build(BuildContext context) {
     final list = _filteredConversations;
+    final role = (_user?['role'] ?? 'client').toString().toLowerCase();
+    final isClient = role == 'client';
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundLight,
@@ -146,16 +247,19 @@ class _MessageCenterScreenState extends State<MessageCenterScreen> {
               child: Row(
                 children: [
                   Container(
-                    width: 32,
-                    height: 32,
-                    decoration: const BoxDecoration(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: AppTheme.surfaceCreamDark,
-                      image: DecorationImage(
-                        image: NetworkImage(
-                          'https://lh3.googleusercontent.com/aida-public/AB6AXuCHer2fd8fIdpC7E46qINZ7zGThzIJaI_HHIoWRrwKb9mGbEVG7bnHZZU4qIyS_pLKUljhePnYl1ZIFKxoMhK8hBZ2wK7Mri3ihQSzwdXd_izZVcZv2xS5HYzRa-Tr6LYvJNLrlQXHeP2_CWJFqvTgZ_vS7G8yh1skVS9UB5NCUY1gQMPzakPlHiWNd4lHHjGY_3aDgl12LM6km7KBp7kFATPw8HcJVUTQ4LEt836cLEfloxfLyixvigsDLRjYmJUbdTDT1kPBdGxFE',
-                        ),
-                        fit: BoxFit.cover,
+                      color: AppTheme.primary,
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      isClient ? 'AB' : 'SJ',
+                      style: GoogleFonts.fraunces(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -188,13 +292,28 @@ class _MessageCenterScreenState extends State<MessageCenterScreen> {
             // Messages Title
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Text(
-                'Messages',
-                style: GoogleFonts.fraunces(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.textPrimary,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isClient ? 'Échanges avec le cabinet' : 'Messagerie & Échanges',
+                    style: GoogleFonts.fraunces(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    isClient
+                        ? 'Vos conversations sécurisées avec vos responsables comptables'
+                        : 'Gestion des messages clients et échanges internes',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 13,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 16),
@@ -222,10 +341,10 @@ class _MessageCenterScreenState extends State<MessageCenterScreen> {
                             _searchQuery = val;
                           });
                         },
-                        style: GoogleFonts.dmSans(fontSize: 15, color: AppTheme.textPrimary),
+                        style: GoogleFonts.dmSans(fontSize: 14, color: AppTheme.textPrimary),
                         decoration: InputDecoration(
-                          hintText: 'Search conversations...',
-                          hintStyle: GoogleFonts.dmSans(fontSize: 14, color: AppTheme.textMuted),
+                          hintText: 'Rechercher une conversation...',
+                          hintStyle: GoogleFonts.dmSans(fontSize: 13, color: AppTheme.textMuted),
                           border: InputBorder.none,
                           enabledBorder: InputBorder.none,
                           focusedBorder: InputBorder.none,
@@ -242,20 +361,17 @@ class _MessageCenterScreenState extends State<MessageCenterScreen> {
 
             // Horizontal filters
             SizedBox(
-              height: 40,
+              height: 38,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 physics: const BouncingScrollPhysics(),
-                children: [
-                  _buildFilterChip('All Messages'),
-                  const SizedBox(width: 8),
-                  _buildFilterChip('Internal Team'),
-                  const SizedBox(width: 8),
-                  _buildFilterChip('Clients'),
-                  const SizedBox(width: 8),
-                  _buildFilterChip('Unread'),
-                ],
+                children: _currentRoleFilterChips.map((chip) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: _buildFilterChip(chip),
+                  );
+                }).toList(),
               ),
             ),
             const SizedBox(height: 16),
@@ -270,7 +386,7 @@ class _MessageCenterScreenState extends State<MessageCenterScreen> {
                           const Icon(Icons.chat_bubble_outline, size: 48, color: AppTheme.textMuted),
                           const SizedBox(height: 16),
                           Text(
-                            'No conversations found',
+                            'Aucune conversation trouvée',
                             style: GoogleFonts.dmSans(fontSize: 14, color: AppTheme.textMuted),
                           ),
                         ],
@@ -287,17 +403,15 @@ class _MessageCenterScreenState extends State<MessageCenterScreen> {
                       itemBuilder: (context, index) {
                         final conv = list[index];
                         return FadeInSlide(
-                          delay: Duration(milliseconds: index * 100),
+                          delay: Duration(milliseconds: index * 80),
                           child: _buildConversationItem(
                             name: conv['name'],
                             message: conv['message'],
                             time: conv['time'],
-                            imageUrl: conv['imageUrl'],
                             fallbackInitials: conv['fallbackInitials'],
                             unreadCount: conv['unreadCount'] ?? 0,
                             isOnline: conv['isOnline'] ?? false,
                             onTap: () {
-                              // Reset unread count locally when entering the chat
                               setState(() {
                                 conv['unreadCount'] = 0;
                               });
@@ -322,7 +436,7 @@ class _MessageCenterScreenState extends State<MessageCenterScreen> {
     return HeavenlyInteraction(
       onTap: () => setState(() => _activeFilter = label),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 14),
         decoration: BoxDecoration(
           color: isActive ? AppTheme.primary : AppTheme.surfaceCreamDark,
           borderRadius: BorderRadius.circular(20),
@@ -345,7 +459,6 @@ class _MessageCenterScreenState extends State<MessageCenterScreen> {
     required String name,
     required String message,
     required String time,
-    String? imageUrl,
     String? fallbackInitials,
     int unreadCount = 0,
     bool isOnline = false,
@@ -357,37 +470,28 @@ class _MessageCenterScreenState extends State<MessageCenterScreen> {
       scaleDown: 0.98,
       hoverScale: 1.01,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
         child: Row(
           children: [
             // Avatar
             Stack(
               children: [
                 Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
+                  width: 44,
+                  height: 44,
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    color: imageUrl == null ? AppTheme.surfaceCreamDark : Colors.transparent,
-                    image: imageUrl != null
-                        ? DecorationImage(
-                            image: NetworkImage(imageUrl),
-                            fit: BoxFit.cover,
-                          )
-                        : null,
+                    color: AppTheme.primary,
                   ),
-                  child: imageUrl == null
-                      ? Center(
-                          child: Text(
-                            fallbackInitials ?? '',
-                            style: GoogleFonts.dmSans(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.primary,
-                            ),
-                          ),
-                        )
-                      : null,
+                  alignment: Alignment.center,
+                  child: Text(
+                    fallbackInitials ?? name.substring(0, 2).toUpperCase(),
+                    style: GoogleFonts.dmSans(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
                 if (isOnline)
                   Positioned(
@@ -397,7 +501,7 @@ class _MessageCenterScreenState extends State<MessageCenterScreen> {
                       width: 12,
                       height: 12,
                       decoration: BoxDecoration(
-                        color: AppTheme.accent,
+                        color: AppTheme.accentGreen,
                         shape: BoxShape.circle,
                         border: Border.all(color: Colors.white, width: 2),
                       ),
@@ -405,7 +509,7 @@ class _MessageCenterScreenState extends State<MessageCenterScreen> {
                   ),
               ],
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 14),
 
             // Title, subtitle & badge
             Expanded(
@@ -419,7 +523,7 @@ class _MessageCenterScreenState extends State<MessageCenterScreen> {
                         child: Text(
                           name,
                           style: GoogleFonts.dmSans(
-                            fontSize: 16,
+                            fontSize: 15,
                             fontWeight: isUnread ? FontWeight.bold : FontWeight.w600,
                             color: AppTheme.textPrimary,
                           ),
@@ -436,7 +540,7 @@ class _MessageCenterScreenState extends State<MessageCenterScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -444,7 +548,7 @@ class _MessageCenterScreenState extends State<MessageCenterScreen> {
                         child: Text(
                           message,
                           style: GoogleFonts.dmSans(
-                            fontSize: 14,
+                            fontSize: 13,
                             fontWeight: isUnread ? FontWeight.bold : FontWeight.normal,
                             color: isUnread ? AppTheme.textPrimary : AppTheme.textSecondary,
                           ),
@@ -458,7 +562,7 @@ class _MessageCenterScreenState extends State<MessageCenterScreen> {
                           height: 20,
                           decoration: const BoxDecoration(
                             shape: BoxShape.circle,
-                            color: AppTheme.primary,
+                            color: AppTheme.accentGreen,
                           ),
                           alignment: Alignment.center,
                           child: Text(
