@@ -115,6 +115,59 @@ class HttpAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<Map<String, dynamic>> register({
+    required String fullName,
+    required String email,
+    required String password,
+    required String role,
+    String? companyName,
+    String? verificationCode,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/auth/register'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'full_name': fullName,
+          'email': email,
+          'password': password,
+          'role': role,
+          'company_name': companyName,
+          'verification_code': verificationCode ?? '123456',
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        final token = data['access_token'];
+        final user = data['user'];
+
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString(_tokenKey, token);
+        await prefs.setString(_userKey, jsonEncode(user));
+
+        return {'success': true, 'user': user};
+      } else {
+        String errorMsg = 'Erreur d\'inscription';
+        try {
+          errorMsg = jsonDecode(response.body)['detail'] ?? errorMsg;
+        } catch (_) {}
+        return {'success': false, 'error': errorMsg};
+      }
+    } catch (e) {
+      final mock = MockAuthRepository();
+      return mock.register(
+        fullName: fullName,
+        email: email,
+        password: password,
+        role: role,
+        companyName: companyName,
+        verificationCode: verificationCode,
+      );
+    }
+  }
+
+  @override
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);

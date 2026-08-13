@@ -12,6 +12,23 @@ class AuthService {
   static Future<Map<String, dynamic>> login(String username, String password) => 
       locator.authRepository.login(username, password);
   
+  static Future<Map<String, dynamic>> register({
+    required String fullName,
+    required String email,
+    required String password,
+    required String role,
+    String? companyName,
+    String? verificationCode,
+  }) =>
+      locator.authRepository.register(
+        fullName: fullName,
+        email: email,
+        password: password,
+        role: role,
+        companyName: companyName,
+        verificationCode: verificationCode,
+      );
+  
   static Future<void> logout() => 
       locator.authRepository.logout();
   

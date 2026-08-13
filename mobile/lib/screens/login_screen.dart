@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import 'dashboard_screen.dart';
+import 'register_screen.dart';
 import '../widgets/fade_in_slide.dart';
 import '../widgets/heavenly_interaction.dart';
 
@@ -386,6 +387,32 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                     ),
                   ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Nouveau sur CEO-IT ? ',
+                      style: GoogleFonts.dmSans(fontSize: 13, color: AppTheme.textSecondary),
+                    ),
+                    HeavenlyInteraction(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                        );
+                      },
+                      child: Text(
+                        'Créer un compte',
+                        style: GoogleFonts.dmSans(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.primary,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 32),
 

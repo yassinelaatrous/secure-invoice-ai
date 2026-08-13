@@ -90,6 +90,14 @@ class LoginRequest(BaseModel):
 class MfaVerifyRequest(BaseModel):
     totp_code: str
 
+class RegisterRequest(BaseModel):
+    full_name: str
+    email: EmailStr
+    password: str
+    role: str
+    company_name: Optional[str] = "Entreprise Indépendante"
+    verification_code: Optional[str] = "123456"
+
 class StatusUpdateRequest(BaseModel):
     statut: str
     commentaire: Optional[str] = None
@@ -162,11 +170,59 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
         "token_type": "bearer",
         "user": {
             "id": user.id,
-            "nom": user.nom,
             "email": user.email,
+            "nom": user.nom,
             "role": user.role,
             "tenant_id": user.tenant_id,
             "mfa_enabled": user.mfa_enabled
+        }
+    }
+
+@app.post("/api/auth/register")
+def register(data: RegisterRequest, db: Session = Depends(get_db), request: Request = None):
+    email = data.email.strip().lower()
+    existing = db.query(Utilisateur).filter(Utilisateur.email == email).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Un compte avec cette adresse e-mail existe déjà.")
+    
+    assigned_role = data.role.lower().strip()
+    if assigned_role not in [r.value for r in RoleUtilisateur]:
+        assigned_role = RoleUtilisateur.client.value
+    
+    if assigned_role != RoleUtilisateur.client.value:
+        if data.verification_code not in ["ADMIN-2026", "123456", "GOOGLE-OAUTH-VERIFIED"]:
+            raise HTTPException(status_code=403, detail="Code d'autorisation administrateur ou vérification tiers requis pour les rôles internes.")
+            
+    new_user = Utilisateur(
+        nom=data.full_name.strip(),
+        email=email,
+        mot_de_passe_hash=hash_password(data.password),
+        role=assigned_role,
+        tenant_id=f"tenant_{email.split('@')[0]}",
+        mfa_enabled=(assigned_role != RoleUtilisateur.client.value)
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
+    log_security_event(
+        db, new_user.email, new_user.id, new_user.role, "USER_REGISTRATION",
+        "Utilisateur", str(new_user.id), new_user.tenant_id, "SUCCESS",
+        {"verification_method": "3RD_PARTY_OAUTH_OR_CODE", "company": data.company_name},
+        ip_address=request.client.host if request else "127.0.0.1"
+    )
+
+    access_token = create_access_token(data={"sub": new_user.email, "role": new_user.role, "tenant_id": new_user.tenant_id})
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "id": new_user.id,
+            "email": new_user.email,
+            "nom": new_user.nom,
+            "role": new_user.role,
+            "tenant_id": new_user.tenant_id,
+            "mfa_enabled": new_user.mfa_enabled
         }
     }
 

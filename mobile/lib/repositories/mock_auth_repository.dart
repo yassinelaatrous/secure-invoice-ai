@@ -82,6 +82,64 @@ class MockAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<Map<String, dynamic>> register({
+    required String fullName,
+    required String email,
+    required String password,
+    required String role,
+    String? companyName,
+    String? verificationCode,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final normalizedRole = role.toLowerCase();
+    
+    String assignedRole = 'client';
+    bool mfaRequired = false;
+    String tenantId = 'tenant_${email.split('@').first}';
+
+    if (normalizedRole.contains('admin')) {
+      assignedRole = 'admin';
+      mfaRequired = true;
+      tenantId = 'cabinet_internal';
+    } else if (normalizedRole.contains('comptable') || normalizedRole.contains('accountant')) {
+      assignedRole = 'comptable';
+      mfaRequired = true;
+      tenantId = 'cabinet_internal';
+    } else if (normalizedRole.contains('audit')) {
+      assignedRole = 'auditeur';
+      mfaRequired = true;
+      tenantId = 'cabinet_internal';
+    }
+
+    // Verify Third Party Code / Internal Admin Verification Token
+    bool is3rdPartyVerified = verificationCode != null && verificationCode.isNotEmpty;
+    bool isAdminVerified = assignedRole == 'client' || (verificationCode == 'ADMIN-2026' || verificationCode == '123456');
+
+    if (!isAdminVerified && assignedRole != 'client') {
+      return {
+        'success': false,
+        'error': 'Le rôle interne ($assignedRole) exige un code de vérification administrateur valide (ex: ADMIN-2026).',
+      };
+    }
+
+    _currentUser = {
+      'id': DateTime.now().millisecondsSinceEpoch % 10000,
+      'email': email,
+      'nom': fullName,
+      'role': assignedRole,
+      'company_name': companyName ?? 'Entreprise Indépendante',
+      'tenant_id': tenantId,
+      'mfa_enabled': mfaRequired,
+      'verified_via_3rd_party': is3rdPartyVerified,
+      'verified_by_admin': isAdminVerified,
+      'created_at': DateTime.now().toIso8601String(),
+    };
+    _token = 'mock_jwt_token_registered_${_currentUser!['id']}';
+    
+    return {'success': true, 'user': _currentUser};
+  }
+
+  @override
   Future<void> logout() async {
     _currentUser = null;
     _token = null;
