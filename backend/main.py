@@ -92,7 +92,7 @@ class MfaVerifyRequest(BaseModel):
 
 class RegisterRequest(BaseModel):
     full_name: str
-    email: EmailStr
+    email: str
     password: str
     role: str
     company_name: Optional[str] = "Entreprise Indépendante"
